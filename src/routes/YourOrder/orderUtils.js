@@ -2,17 +2,27 @@ import RequestApi from '../../common/apis/RequestApi'
 import { HTTP_STATUS_CODE_OK } from '../../common/apis/constants'
 
 
-export const fetchOrder = async (orderID) => {
+export const fetchOrder = async (orderId) => {
   const params = {
-    order_number: orderID,
+    order_number: orderId,
+    'expand[]': 'fulfillments.trackers',
   }
-  const [result, response] = await RequestApi.getOrder({ params })
+  const [orderResult, orderResponse] = await RequestApi.getOrder({ params })
 
-  if (response.status === HTTP_STATUS_CODE_OK) {
-    const orderData = result.data[0]
-    return orderData
+  if (orderResponse.status !== HTTP_STATUS_CODE_OK) {
+    return null
   }
 
+  const order = orderResult.data[0]
 
-  return null
+  const orderData = {
+    firstName: order.first_name,
+    lastName: order.last_name,
+    fulfillmentsId: order.fulfillments.data.map(f => f.id),
+    trackers: [].concat(order.fulfillments.data.map(f => f.trackers.data))[0],
+  }
+  console.log(orderData.trackers)
+
+
+  return orderData
 }

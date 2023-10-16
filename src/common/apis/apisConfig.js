@@ -22,6 +22,7 @@ export const api = (
 
 const apisConfig = {
   getOrder: api(`${BASE_URL}${'/v2/orders'}`, GET),
+  getTracker: api(`${BASE_URL}${'/v2/trackers'}`, GET),
 }
 
 

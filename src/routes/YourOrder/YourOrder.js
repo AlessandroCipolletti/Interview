@@ -1,45 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchOrder } from './orderUtils'
-import { receiveOrderAction } from './actions'
-import { DataWrapper }  from './styled'
+import { receiveOrderAction, fetchOrderAction, orderErrorAction } from './actions'
+import { Label, Title }  from './styled'
 
-const orderID = 'UK1876YH08_2'
+const orderId = 'UK1876YH08_2'
 
 
 const YourOrder = () => {
-  const [status, setStatus] = useState(0) // 0: not fetched, 1: fetching, 2: fetched, 3: error
+  const needsToFetch = useSelector((state) => state.yourOrder.state === 0)
   const orderData = useSelector((state) => state.yourOrder.orderData)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    console.log('effect', status)
-    if (status === 0) {
-      setStatus(1)
-      fetchOrder(orderID).then(orderData => {
-        if (orderData) {
-          setStatus(2)
-          dispatch(receiveOrderAction(orderData))
+    if (needsToFetch) {
+      dispatch(fetchOrderAction())
+      fetchOrder(orderId).then(result => {
+        if (result) {
+          dispatch(receiveOrderAction(result))
         } else {
-          setStatus(3)
+          dispatch(orderErrorAction())
         }
       })
     }
 
-  }, [status])
-
+  }, [needsToFetch])
 
   return (
     <>
-      Your Order:
-      <br />
-        id: {orderID}
-      <br /><br />
-      Data:
-      <br /><br />
-      <DataWrapper>
-        {JSON.stringify(orderData)}
-      </DataWrapper>
+      <Title>Your Order:</Title>
+      <Label>id: {orderId}</Label>
+      <Label>First name: {orderData.firstName}</Label>
+      <Label>Last name: {orderData.lastName}</Label>
+      <Label>Trackers id: {orderData?.trackers && orderData.trackers.map(t => t.id).join()}</Label>
     </>
   )
 }
