@@ -1,0 +1,19 @@
+{
+  "plugins": [
+    [
+      "@babel/transform-runtime"
+    ],
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./src"
+        ],
+        "alias": {
+          "@": "./src",
+          "@common": "./src/common"
+        }
+      }
+    ]
+  ]
+}
